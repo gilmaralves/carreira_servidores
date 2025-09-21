@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evolução da Distribuição de Cargos por Classe</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            padding: 40px;
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .title {
+            color: #2c3e50;
+            font-size: 2.2em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 500px;
+            margin-bottom: 30px;
+        }
+
+        .insights {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .insight-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            padding: 20px;
+            border-left: 4px solid;
+        }
+
+        .insight-card.trend-up {
+            border-left-color: #27ae60;
+        }
+
+        .insight-card.trend-down {
+            border-left-color: #e74c3c;
+        }
+
+        .insight-card.trend-stable {
+            border-left-color: #f39c12;
+        }
+
+        .insight-title {
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .insight-text {
+            color: #5a6c7d;
+            font-size: 0.95em;
+            line-height: 1.4;
+        }
+
+        .trend-icon {
+            display: inline-block;
+            margin-right: 8px;
+            font-size: 1.2em;
+        }
+
+        .trend-up .trend-icon {
+            color: #27ae60;
+        }
+
+        .trend-down .trend-icon {
+            color: #e74c3c;
+        }
+
+        .trend-stable .trend-icon {
+            color: #f39c12;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #7f8c8d;
+            font-style: italic;
+            font-size: 0.9em;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chart-container > * {
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        .chart-container > *:nth-child(2) { animation-delay: 0.1s; }
+        .chart-container > *:nth-child(3) { animation-delay: 0.2s; }
+        .chart-container > *:nth-child(4) { animation-delay: 0.3s; }
+
+        @media (max-width: 768px) {
+            .chart-container {
+                padding: 20px;
+            }
+            
+            .title {
+                font-size: 1.8em;
+            }
+            
+            .chart-wrapper {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="chart-container">
+        <div class="header">
+            <h1 class="title">Distribuição dos Cargos de <br>Oficial do MP por Classe</h1>
+            <p class="subtitle">entre os anos de 2007 e 2020</p>
+        </div>
+
+        <div class="chart-wrapper">
+            <canvas id="evolutionChart"></canvas>
+        </div>
+
+        <div class="insights">
+            <div class="insight-card trend-down">
+                <div class="insight-title">
+                    <span class="trend-icon">↓</span>
+                    Classe D - Declínio Acentuado
+                </div>
+                <div class="insight-text">
+                    Queda expressiva de 68,83% para 22,00%, indicando reestruturação significativa na base da organização.
+                </div>
+            </div>
+
+            <div class="insight-card trend-up">
+                <div class="insight-title">
+                    <span class="trend-icon">↑</span>
+                    Classe C - Crescimento Consistente
+                </div>
+                <div class="insight-text">
+                    Crescimento de 25,08% para 54,00%, tornando-se a classe predominante em 2020.
+                </div>
+            </div>
+
+            <div class="insight-card trend-up">
+                <div class="insight-title">
+                    <span class="trend-icon">↗</span>
+                    Classe B - Expansão Notável
+                </div>
+                <div class="insight-text">
+                    Aumento significativo de 2,50% para 24,00%, demonstrando valorização de posições intermediárias.
+                </div>
+            </div>
+
+            <div class="insight-card trend-down">
+                <div class="insight-title">
+                    <span class="trend-icon">↓</span>
+                    Classe A - Extinção Gradual
+                </div>
+                <div class="insight-text">
+                    Redução de 3,58% até a completa eliminação em 2020, possivelmente por reestruturação hierárquica.
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Dados baseados nas Resoluções PGJ 54/2007, 58/2007, 64/2013 e 28/2020 • Período de análise: 2007-2020</p>
+        </div>
+    </div>
+
+    <script>
+        // Configuração do gráfico
+        const ctx = document.getElementById('evolutionChart').getContext('2d');
+        
+        const data = {
+            labels: ['2007', '2008', '2013', '2020'],
+            datasets: [
+                {
+                    label: 'Classe D',
+                    data: [68.83, 58.25, 29.00, 22.00],
+                    borderColor: '#e74c3c',
+                    backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                    borderWidth: 3,
+                    pointBackgroundColor: '#e74c3c',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 6,
+                    pointHoverRadius: 8,
+                    tension: 0.4
+                },
+                {
+                    label: 'Classe C',
+                    data: [25.08, 34.42, 50.00, 54.00],
+                    borderColor: '#f39c12',
+                    backgroundColor: 'rgba(243, 156, 18, 0.1)',
+                    borderWidth: 3,
+                    pointBackgroundColor: '#f39c12',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 6,
+                    pointHoverRadius: 8,
+                    tension: 0.4
+                },
+                {
+                    label: 'Classe B',
+                    data: [2.50, 6.33, 20.00, 24.00],
+                    borderColor: '#27ae60',
+                    backgroundColor: 'rgba(39, 174, 96, 0.1)',
+                    borderWidth: 3,
+                    pointBackgroundColor: '#27ae60',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 6,
+                    pointHoverRadius: 8,
+                    tension: 0.4
+                },
+                {
+                    label: 'Classe A',
+                    data: [3.58, 1.00, 1.00, 0.00],
+                    borderColor: '#9b59b6',
+                    backgroundColor: 'rgba(155, 89, 182, 0.1)',
+                    borderWidth: 3,
+                    pointBackgroundColor: '#9b59b6',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 6,
+                    pointHoverRadius: 8,
+                    tension: 0.4
+                }
+            ]
+        };
+
+        const config = {
+            type: 'line',
+            data: data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            font: {
+                                size: 14,
+                                weight: '600'
+                            },
+                            padding: 20,
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                        borderColor: '#ddd',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        displayColors: true,
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.parsed.y.toFixed(2) + '%';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Anos',
+                            font: {
+                                size: 14,
+                                weight: '600'
+                            },
+                            color: '#2c3e50'
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        },
+                        ticks: {
+                            font: {
+                                size: 12,
+                                weight: '500'
+                            },
+                            color: '#5a6c7d'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Percentual (%)',
+                            font: {
+                                size: 14,
+                                weight: '600'
+                            },
+                            color: '#2c3e50'
+                        },
+                        min: 0,
+                        max: 80,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        },
+                        ticks: {
+                            font: {
+                                size: 12,
+                                weight: '500'
+                            },
+                            color: '#5a6c7d',
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                elements: {
+                    point: {
+                        hoverBackgroundColor: '#fff'
+                    }
+                },
+                animation: {
+                    duration: 2000,
+                    easing: 'easeInOutQuart'
+                }
+            }
+        };
+
+        // Criar o gráfico
+        const chart = new Chart(ctx, config);
+
+        // Animação de entrada dos dados
+        setTimeout(() => {
+            chart.update('active');
+        }, 500);
+    </script>
+</body>
+</html>
